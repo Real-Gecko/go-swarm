@@ -22,11 +22,19 @@ package main
 
 import (
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 
 	"github.com/aucloud/go-swarm/internal"
 )
 
 func init() {
+	updateCmd.Flags().BoolP(
+		"force-single-manager-cluster", "f", false,
+		"Force update of single-manager-node clusters",
+	)
+	viper.BindPFlag("force-single-manager-cluster", updateCmd.Flags().Lookup("force-single-manager-cluster"))
+	viper.SetDefault("force-single-manager-cluster", false)
+
 	RootCmd.AddCommand(updateCmd)
 }
 
@@ -41,6 +49,7 @@ workers, they are added. Any that should be removed are drained and
 removed from the cluster gracefully.`,
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		internal.Update(manager, args)
+		force := viper.GetBool("force-single-manager-cluster")
+		internal.Update(manager, args, force)
 	},
 }

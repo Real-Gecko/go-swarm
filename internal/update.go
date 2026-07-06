@@ -28,7 +28,7 @@ import (
 	"github.com/aucloud/go-swarm"
 )
 
-func Update(m *swarm.Manager, args []string) int {
+func Update(m *swarm.Manager, args []string, force bool) int {
 	var (
 		f   io.ReadCloser
 		err error
@@ -59,7 +59,7 @@ func Update(m *swarm.Manager, args []string) int {
 		return StatusError
 	}
 
-	if err := m.UpdateSwarm(cf.Nodes); err != nil {
+	if err := m.UpdateSwarm(cf.Nodes, force); err != nil {
 		fmt.Fprintf(os.Stderr, "error updating swarm cluster: %s\n", err)
 		return StatusError
 	}
