@@ -132,19 +132,10 @@ func (s *sshSwitcher) Runner() runcmd.Runner {
 }
 
 func (s *sshSwitcher) Switch(ctx context.Context, nodeAddr string) error {
-	_, port, err := net.SplitHostPort(s.addr)
-	if err != nil {
-		if addrError, ok := err.(*net.AddrError); ok && addrError.Err == "missing port in address" {
-			port = "22"
-		} else {
-			return fmt.Errorf("error parsing addr: %w", err)
-		}
+	addr := nodeAddr
+	if _, _, err := net.SplitHostPort(nodeAddr); err != nil {
+		addr = fmt.Sprintf("%s:22", nodeAddr)
 	}
-	if port == "" {
-		port = "22"
-	}
-
-	addr := fmt.Sprintf("%s:%s", nodeAddr, port)
 
 	runner, err := runcmd.NewRemoteKeyAuthRunner(ctx, s.user, addr, s.key)
 	if err != nil {
@@ -160,19 +151,10 @@ func (s *sshSwitcher) Switch(ctx context.Context, nodeAddr string) error {
 }
 
 func (s *sshSwitcher) SwitchVia(ctx context.Context, nodeAddr string) error {
-	_, port, err := net.SplitHostPort(s.addr)
-	if err != nil {
-		if addrError, ok := err.(*net.AddrError); ok && addrError.Err == "missing port in address" {
-			port = "22"
-		} else {
-			return fmt.Errorf("error parsing addr: %w", err)
-		}
+	addr := nodeAddr
+	if _, _, err := net.SplitHostPort(nodeAddr); err != nil {
+		addr = fmt.Sprintf("%s:22", nodeAddr)
 	}
-	if port == "" {
-		port = "22"
-	}
-
-	addr := fmt.Sprintf("%s:%s", nodeAddr, port)
 
 	runner, err := runcmd.NewRemoteKeyAuthRunnerViaJumphost(ctx, s.user, addr, s.addr, s.key)
 	if err != nil {
